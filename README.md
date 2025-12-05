@@ -178,12 +178,6 @@ cd Supply-chain-operation-data-analysis
 pip install pandas numpy matplotlib seaborn openpyxl
 ```
 
-或使用 requirements.txt（如有）:
-
-```bash
-pip install -r requirements.txt
-```
-
 ### 3️⃣ 运行分析脚本
 
 ```bash
