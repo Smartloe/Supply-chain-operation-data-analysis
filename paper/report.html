@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>380平台供应链经营数据分析报告</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-tab:hover, .nav-tab.active {
+            background: white;
+            color: var(--dark-color);
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .card-header.green {
+            background: linear-gradient(135deg, var(--secondary-color), #27ae60);
+        }
+        
+        .card-header.orange {
+            background: linear-gradient(135deg, var(--warning-color), #e67e22);
+        }
+        
+        .card-header.purple {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-item {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .summary-item .label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: var(--light-bg);
+            font-weight: 600;
+            color: var(--dark-color);
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        
+        .analysis-text {
+            line-height: 1.8;
+            color: #444;
+            padding: 15px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .analysis-text h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .analysis-text ul {
+            margin-left: 20px;
+        }
+        
+        .analysis-text li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav-tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏢 380平台供应链经营数据分析报告</h1>
+            <p>分析周期：2014年1月 - 2015年12月 | 报告生成时间：2025年12月</p>
+        </header>
+        
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">📊 总览</button>
+            <button class="nav-tab" onclick="showSection('task4')">📈 平台行业分析</button>
+            <button class="nav-tab" onclick="showSection('task5')">👶 母婴行业分析</button>
+            <button class="nav-tab" onclick="showSection('conclusion')">📝 结论与建议</button>
+        </nav>
+        
+        <!-- 总览 -->
+        <section id="overview" class="section active">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="icon">💰</div>
+                    <div class="value">52.4亿</div>
+                    <div class="label">总销售收入</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">📈</div>
+                    <div class="value">7,801万</div>
+                    <div class="label">经营利润</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">🏭</div>
+                    <div class="value">10+</div>
+                    <div class="label">行业分类</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">🏷️</div>
+                    <div class="value">65+</div>
+                    <div class="label">品牌数量</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">📋 项目概述</div>
+                <div class="card-body">
+                    <div class="analysis-text">
+                        <h4>项目背景</h4>
+                        <p>随着电子商务的迅速发展和网络购物的流行，本项目对380平台2014年1月至2015年12月的经营数据进行全面分析，评估平台及母婴部门的健康状况和发展趋势。</p>
+                        
+                        <h4 style="margin-top: 20px;">分析维度</h4>
+                        <ul>
+                            <li><strong>运营情况</strong>：销售收入、订单量、行业分布等</li>
+                            <li><strong>财务状况</strong>：盈利能力、成本结构、利润率分析</li>
+                            <li><strong>物流管理</strong>：库存周转率、品牌标签（热销/正常/滞销）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header green">✅ 数据预处理说明</div>
+                <div class="card-body">
+                    <div class="analysis-text">
+                        <h4>数据处理过程</h4>
+                        <ul>
+                            <li><strong>原始数据</strong>：73,590条记录，36个字段</li>
+                            <li><strong>缺失值处理</strong>：数值型字段用0填充，非数值型用"未知"填充</li>
+                            <li><strong>重复值处理</strong>：删除重复记录（0条重复）</li>
+                            <li><strong>时间范围</strong>：2014-01-01 至 2015-12-01</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 平台行业分析 -->
+        <section id="task4" class="section">
+            <div class="card">
+                <div class="card-header">📊 任务4.1 每月盈利情况</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/4.1_平台月盈利分析.png" alt="平台月盈利分析">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>分析结论</h4>
+                        <ul>
+                            <li>平台销售收入整体呈现<span class="highlight">稳定增长</span>趋势</li>
+                            <li>2015年下半年业绩表现尤为突出</li>
+                            <li>综合毛利保持正向，但存在季节性波动</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header orange">📈 任务4.2 各行业盈利分布</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/4.2_各行业盈利分布.png" alt="各行业盈利分布">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>分析结论</h4>
+                        <ul>
+                            <li><strong>母婴行业</strong>是平台核心盈利来源</li>
+                            <li>各行业利润率差异明显，需针对性优化</li>
+                            <li>部分行业存在亏损，需重点关注</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header purple">🔮 任务4.3 月度趋势与预测</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/4.3_各行业月盈利及预测.png" alt="各行业月盈利及预测">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>预测说明</h4>
+                        <p>基于最近6个月的移动平均，预测2016年1月各行业的经营利润。预测结果显示母婴行业将继续保持良好的盈利水平。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header green">💡 任务4.4 投入比重建议</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/4.4_投入比重建议.png" alt="投入比重建议">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>投入建议</h4>
+                        <ul>
+                            <li><span class="badge badge-success">重点投入</span> 母婴行业 - 盈利能力强，增长稳定</li>
+                            <li><span class="badge badge-info">适度投入</span> 日百/洗护行业 - 有增长潜力</li>
+                            <li><span class="badge badge-warning">维持现状</span> 稳定行业 - 控制成本</li>
+                            <li><span class="badge badge-danger">减少投入</span> 亏损行业 - 评估退出策略</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 母婴行业分析 -->
+        <section id="task5" class="section">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="icon">👶</div>
+                    <div class="value">65</div>
+                    <div class="label">母婴品牌数</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">🔥</div>
+                    <div class="value">37</div>
+                    <div class="label">热销品牌</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">✅</div>
+                    <div class="value">36</div>
+                    <div class="label">盈利品牌</div>
+                </div>
+                <div class="summary-item">
+                    <div class="icon">⭐</div>
+                    <div class="value">31</div>
+                    <div class="label">优秀品牌</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">📊 任务5.1 品牌销售分布</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/5.1_品牌销售分布.png" alt="品牌销售分布">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>Top品牌分析</h4>
+                        <ul>
+                            <li><strong>惠氏</strong>：销售收入第一，市场占有率最高</li>
+                            <li><strong>美素</strong>：紧随其后，毛利率表现优秀</li>
+                            <li><strong>雅培/美赞臣</strong>：稳居行业前列</li>
+                        </ul>
+                        <h4 style="margin-top: 15px;">调整建议</h4>
+                        <p>对于销售占比低但毛利率高的品牌，建议加大推广力度；对于销售占比低且毛利率低的品牌，考虑淘汰。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header orange">🗺️ 任务5.2 地区盈利分布</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/5.2_品牌地区盈利热力图.png" alt="品牌地区盈利热力图">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>区域分析</h4>
+                        <p>通过热力图可以直观看出各品牌在不同地区的盈利表现，深绿色表示盈利较好，红色表示亏损区域。建议针对亏损区域进行策略调整。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header purple">📦 任务5.3 库存周转分析</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/5.3_库存周转分析.png" alt="库存周转分析">
+                    </div>
+                    <div class="analysis-text">
+                        <h4>品牌标签分类</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>标签</th>
+                                    <th>判断标准</th>
+                                    <th>品牌数量</th>
+                                    <th>建议</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge badge-success">热销</span></td>
+                                    <td>周转天数 < 60天</td>
+                                    <td>37个</td>
+                                    <td>增加备货，避免缺货</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-info">正常</span></td>
+                                    <td>周转天数 60-180天</td>
+                                    <td>12个</td>
+                                    <td>保持现状，持续监控</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge badge-danger">滞销</span></td>
+                                    <td>周转天数 > 180天</td>
+                                    <td>16个</td>
+                                    <td>清理库存，减少积压</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header green">📝 任务5.4 综合分析</div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="../graph/5.4_综合分析.png" alt="综合分析">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 结论与建议 -->
+        <section id="conclusion" class="section">
+            <div class="card">
+                <div class="card-header">🎯 母婴部门健康状况评估</div>
+                <div class="card-body">
+                    <div class="summary-grid">
+                        <div class="summary-item" style="border-left: 4px solid #27ae60;">
+                            <div class="value" style="color: #27ae60;">优秀</div>
+                            <div class="label">31个品牌 (47.7%)</div>
+                        </div>
+                        <div class="summary-item" style="border-left: 4px solid #3498db;">
+                            <div class="value" style="color: #3498db;">良好</div>
+                            <div class="label">18个品牌 (27.7%)</div>
+                        </div>
+                        <div class="summary-item" style="border-left: 4px solid #f39c12;">
+                            <div class="value" style="color: #f39c12;">一般</div>
+                            <div class="label">7个品牌 (10.8%)</div>
+                        </div>
+                        <div class="summary-item" style="border-left: 4px solid #e74c3c;">
+                            <div class="value" style="color: #e74c3c;">较差</div>
+                            <div class="label">9个品牌 (13.8%)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header purple">📌 发展趋势分析</div>
+                <div class="card-body">
+                    <div class="analysis-text">
+                        <h4>趋势分布</h4>
+                        <ul>
+                            <li><span class="badge badge-success">上升趋势</span> 35个品牌 (53.8%) - 核心增长动力</li>
+                            <li><span class="badge badge-info">稳定趋势</span> 12个品牌 (18.5%) - 基础业务保障</li>
+                            <li><span class="badge badge-danger">下降趋势</span> 18个品牌 (27.7%) - 需重点关注</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header orange">💡 问题发现与优化建议</div>
+                <div class="card-body">
+                    <div class="analysis-text">
+                        <h4>1. 库存管理优化</h4>
+                        <ul>
+                            <li>对于<strong>16个滞销品牌</strong>，建议及时清理库存，避免资金占用</li>
+                            <li>对于<strong>热销品牌</strong>，需增加备货，避免缺货损失</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">2. 成本结构优化</h4>
+                        <ul>
+                            <li>对于<strong>29个亏损品牌</strong>，需分析原因，优化成本结构或考虑淘汰</li>
+                            <li>重点关注毛利率较低的品牌，提升议价能力</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">3. 品牌策略调整</h4>
+                        <ul>
+                            <li><strong>惠氏、美素、雅培、美赞臣</strong>等头部品牌保持重点投入</li>
+                            <li>对高毛利率但低销量的品牌加大推广力度</li>
+                            <li>评估尾部品牌的存在价值，优化品牌结构</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">4. 区域策略</h4>
+                        <ul>
+                            <li>根据地区盈利热力图，针对亏损区域调整营销策略</li>
+                            <li>在盈利区域加大投入，扩大市场份额</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header green">✅ 总结</div>
+                <div class="card-body">
+                    <div class="analysis-text">
+                        <p>总体来看，380平台母婴部门整体运营状况<strong>健康</strong>，超过75%的品牌处于"优秀"或"良好"状态，超过50%的品牌呈上升趋势。但仍需关注：</p>
+                        <ul>
+                            <li>滞销品牌的库存清理</li>
+                            <li>亏损品牌的成本优化</li>
+                            <li>热销品牌的备货管理</li>
+                            <li>区域差异化策略的制定</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>预计2016年发展趋势积极，建议平台继续加大对母婴行业的投入，特别是头部优质品牌。</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2025 供应链经营数据分析项目 | 使用 Python + Pandas + Matplotlib + Seaborn 生成</p>
+        </footer>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // 隐藏所有section
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 移除所有tab的active状态
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示目标section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 激活对应的tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
