@@ -142,8 +142,6 @@ Supply-chain-operation-data-analysis/
 ├── 📂 paper/                             # 报告文件
 │   └── report.html                       # 📄 交互式分析报告
 │
-├── 📂 PPT/                               # 演示文稿
-│
 ├── Python供应链经营数据分析项目实训方案.pdf  # 项目任务书
 │
 └── README.md                             # 项目说明文档
